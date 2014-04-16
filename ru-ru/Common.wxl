@@ -13,4 +13,5 @@
 	<String Id="NewProductVersionExists">Более новая версия продукта [ProductName] уже установлена.</String>
 	<String Id="LaunchAfterInstall">Запустить установленный продукт сейчас</String>
 	<String Id="TempFiles">Временные файлы</String>
+	<String Id="UninstallOriginalPackage">Удаление предыдущей версии продукта</String>
 </WixLocalization>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix
+	xmlns="http://wixtoolset.org/schemas/v4/wxs"
+>
+	<Fragment Id="DONTUNINSTALLORIGINALPACKAGE">
+		<Property Id="DONTUNINSTALLORIGINALPACKAGE" Admin="yes"/>
+	</Fragment>
+
+	<Fragment Id="UninstallOriginalPackage">
+		<WixVariable Id="OriginalPackageKey" Overridable="yes" Value="put here uninstall subkey name"/>
+		<WixVariable Id="OriginalPackageUninstallerFileName" Overridable="yes" Value="uninstall.exe"/>
+		<WixVariable Id="OriginalPackageUninstallerArgs" Overridable="yes" Value="/SILENT /NORESTART /SUPPRESSMSGBOXES"/>
+
+		<?define OldPackageId=""?>
+		<?define OldPackageUninstallerId="!(wix.OriginalPackageKey)"?>
+		<?define OldPackageUninstallerFileName="!(wix.OriginalPackageUninstallerFileName)"?>
+		<?define OldPackageUninstallerArgs="!(wix.OriginalPackageUninstallerArgs)"?>
+
+		<?include Common.UninstallOldPackage.wxi?>
+	</Fragment>
+
+</Wix>

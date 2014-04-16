@@ -13,4 +13,5 @@
 	<String Id="NewProductVersionExists">Newer version [ProductName] is already installed.</String>
 	<String Id="LaunchAfterInstall">Launch installed software now</String>
 	<String Id="TempFiles">Temporary files</String>
+	<String Id="UninstallOriginalPackage">Uninstalling previous versions</String>
 </WixLocalization>

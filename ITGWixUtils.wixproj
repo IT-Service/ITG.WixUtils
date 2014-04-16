@@ -29,6 +29,7 @@
     <Compile Include="Common.DatabaseDir.wxs" />
     <Compile Include="Common.Properties.wxs" />
     <Compile Include="Common.Help.wxs" />
+    <Compile Include="Common.UninstallOldPackage.wxs" />
     <Compile Include="Common.WscServer.wxs" />
     <Compile Include="WixUI_MondoWithoutLicenseDlg.wxs" />
   </ItemGroup>
@@ -39,6 +40,9 @@
   <ItemGroup>
     <Folder Include="en-us" />
     <Folder Include="ru-ru" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Common.UninstallOldPackage.wxi" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--

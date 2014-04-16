@@ -184,16 +184,15 @@
 	</Fragment>
 
 	<Fragment Id="ProductVersionProgramMenuFolder">
-		<WixVariable Id="ManufacturerId" Overridable="yes" Value="ManufacturerId"/>
-		<WixVariable Id="ProductInternalName" Overridable="yes" Value="ProductInternalName"/>
+		<WixVariable Id="Manufacturer" Overridable="yes" Value="Manufacturer"/>
 		<WixVariable Id="ProductShortName" Overridable="yes" Value="ProductShortName"/>
 		<WixVariable Id="ProductMajorVersion" Overridable="yes" Value="ProductMajorVersion"/>
 		<WixVariable Id="ProductMinorVersion" Overridable="yes" Value="ProductMinorVersion"/>
 
 		<DirectoryRef Id="ProgramMenuFolder">
-			<Directory Id="ManufacturerProgramMenuFolder">
-				<Directory Id="ProductProgramMenuFolder">
-					<Directory Id="ProductVersionProgramMenuFolder"/>
+			<Directory Id="ManufacturerProgramMenuFolder" Name="!(wix.Manufacturer)">
+				<Directory Id="ProductProgramMenuFolder" Name="!(wix.ProductShortName)">
+					<Directory Id="ProductVersionProgramMenuFolder" Name="!(wix.ProductMajorVersion).!(wix.ProductMinorVersion)"/>
 				</Directory>
 			</Directory>
 		</DirectoryRef>

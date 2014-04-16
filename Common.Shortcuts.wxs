@@ -22,12 +22,18 @@
 	<?foreach ShFolder in $(var.ShFolders)?>
 	<Fragment Id="DISABLE$(var.ShFolder)SHORTCUTS">
 		<!-- возможность отключения создания ярлыков по одному -->
+		<?if ( $(var.ShFolder) = "PRODUCTSTARTUPFOLDER" ) or ( $(var.ShFolder) = "PRODUCTDESKTOPFOLDER" )?>
+			<WixVariable Id="DISABLE$(var.ShFolder)SHORTCUTS" Overridable="yes" Value="Yes"/>
+		<?else?>
+			<WixVariable Id="DISABLE$(var.ShFolder)SHORTCUTS" Overridable="yes" Value="No"/>
+		<?endif?>
 		<DirectoryRef Id="$(var.ShFolder)"/>
 		<DirectoryRef Id="TempFolder"/>
 
 		<Property
 			Id="DISABLE$(var.ShFolder)SHORTCUTS"
 			Admin="yes"
+			Value="!(wix.DISABLE$(var.ShFolder)SHORTCUTS)"
 			SuppressModularization="yes"
 		/>
 
@@ -36,7 +42,7 @@
 			Value="[TempFolder]"
 			Sequence="execute"
 		>
-			<![CDATA[DISABLE$(var.ShFolder)SHORTCUTS]]>
+			<![CDATA[DISABLE$(var.ShFolder)SHORTCUTS = "Yes"]]>
 		</SetDirectory>
 		<IgnoreModularization Type="Action" Name="Set$(var.ShFolder)"/>
 

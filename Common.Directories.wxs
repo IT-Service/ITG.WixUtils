@@ -70,8 +70,6 @@
 				</Directory>
 			</Directory>
 		</DirectoryRef>
-
-		<Property Id="PRODUCTPROGRAMFOLDER" Admin="yes" />
 	</Fragment>
 
 	<Fragment Id="WindowsFolder">

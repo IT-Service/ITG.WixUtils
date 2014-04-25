@@ -13,7 +13,7 @@
 
 		<InstallExecuteSequence>
 			<CreateShortcuts Sequence="4500">
-				<![CDATA[NOT DISABLESHORTCUTS]]>
+				<![CDATA[Not DISABLESHORTCUTS]]>
 			</CreateShortcuts>
 		</InstallExecuteSequence>
 	</Fragment>
@@ -56,9 +56,12 @@
 		<WixVariable Id="ProductMajorVersion" Overridable="yes" Value="ProductMajorVersion"/>
 		<WixVariable Id="ProductMinorVersion" Overridable="yes" Value="ProductMinorVersion"/>
 
-		<DirectoryRef Id="ProductVersionProgramMenuFolder">
+		<DirectoryRef Id="ProgramMenuFolder">
 			<Directory Id="PRODUCTMENUFOLDER" Name="!(wix.ProductShortName) !(wix.ProductMajorVersion).!(wix.ProductMinorVersion)"/>
 		</DirectoryRef>
+		<!--<DirectoryRef Id="ProductVersionProgramMenuFolder">
+			<Directory Id="PRODUCTMENUFOLDER" Name="!(wix.ProductShortName) !(wix.ProductMajorVersion).!(wix.ProductMinorVersion)"/>
+		</DirectoryRef>-->
 		<PropertyRef Id="DISABLEPRODUCTMENUFOLDERSHORTCUTS"/>
 		<IgnoreModularization Type="Directory" Name="PRODUCTMENUFOLDER"/>
 	</Fragment>

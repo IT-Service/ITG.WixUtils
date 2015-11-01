@@ -1,4 +1,5 @@
-obj
+/obj
+/bin
 *.suo
 /_UpgradeReport_Files
 /UpgradeLog*.htm

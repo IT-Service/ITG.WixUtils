@@ -79,6 +79,13 @@
 		<IgnoreModularization Type="Directory" Name="WindowsFolder"/>
 	</Fragment>
 
+	<Fragment Id="FontsFolder">
+		<DirectoryRef Id="TARGETDIR">
+			<Directory Id="FontsFolder" SourceName="Fonts"/>
+		</DirectoryRef>
+		<IgnoreModularization Type="Directory" Name="FontsFolder"/>
+	</Fragment>
+
 	<Fragment Id="SystemFolder">
 		<DirectoryRef Id="TARGETDIR">
 			<Directory Id="SystemFolder" SourceName="System32"/>

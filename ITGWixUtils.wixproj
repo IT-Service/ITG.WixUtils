@@ -43,6 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Common.UninstallOldPackage.wxi" />
+    <Content Include="Makefile" />
+    <Content Include="wixlib.mk" />
+    <Content Include="wixproj.mk" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--

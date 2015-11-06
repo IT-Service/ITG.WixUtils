@@ -4,8 +4,6 @@
 # The build machine must have WiX 4.0 installed 
 # 
 
-.PHONY: clean msm msi
-
 .SECONDARY:;
 
 .DELETE_ON_ERROR:;
@@ -15,21 +13,36 @@ TargetName				?= $(ProjectName)
 
 WXIFILES				?=
 
-WIXLIBS					?= ITG.WixUtils
-vpath %.wixlib ../ITG.WixUtils/bin/Release
-
 ProjectDir				?= $(CURDIR)/
 OutputDir				?= bin/
 IntermediateOutputDir	?= obj/
 Configuration			?= Release
 Platform				?= x86
 Culture					?= ru-ru
+Cultures				?= $(Culture)
 SuppressICEs			?= ICEM09
 SuppressWarnings		?= 1085 1086
 
 #TargetExt				?= .msi
 TargetFileName			?= $(TargetName)$(TargetExt)
 TargetFullName			?= $(OutputPath)$(TargetFileName)
+
+ifndef WIXUTILSLIB
+
+WixUtilsTargetName		:= ITG.WixUtils
+WixUtilsProjectDir		:= ../$(WixUtilsTargetName)/
+WixUtilsOutputPath		:= $(WixUtilsProjectDir)bin/$(Configuration)
+WixUtilsTargetFullName	:= $(WixUtilsOutputPath)/$(WixUtilsTargetName).wixlib
+vpath %.wixlib $(WixUtilsOutputPath)
+DEPENDENCIES			+= $(WixUtilsTargetFullName)
+
+$(WixUtilsTargetFullName): ;
+	$(MAKE) -C $(WixUtilsProjectDir)
+
+cleanwixutils: ;
+	$(MAKE) -C $(WixUtilsProjectDir) clean
+
+endif
 
 WXSFILES				?= $(wildcard *.wxs)
 WXLFILES				?= $(wildcard *.wxl) $(foreach culture,$(Cultures),$(wildcard $(culture)/*.wxl))
@@ -53,9 +66,17 @@ LIGHT					?= "$(WIXDIR)light.exe"
 LIT						?= "$(WIXDIR)lit.exe"
 PATHSEP					:=;
 
-clean:
+.PHONY: clean cleanwixproj
+
+cleanwixproj:
 	rm -rf $(OutputDir)
 	rm -rf $(IntermediateOutputDir)
+
+ifdef WIXUTILSLIB
+clean: cleanwixproj
+else
+clean: cleanwixproj cleanwixutils
+endif
 
 vpath %.wixobj $(IntermediateOutputDir)$(Configuration)
 
@@ -88,7 +109,7 @@ vpath %.wixlib $(OutputDir)$(Configuration)
 		-nologo \
 		-sice:$(SuppressICEs) \
 		-out $@ \
-		-cultures:$(subst $(SPACE),;,$(Cultures)) \
+		-cultures:$(Culture) \
 		$(foreach locfile,$(filter %.wxl,$^),-loc $(locfile) ) \
 		$(filter %.wixobj,$^) \
 		$(filter %.wixlib,$^)
@@ -102,4 +123,8 @@ vpath %.wixlib $(OutputDir)$(Configuration)
 		$(filter %.wixobj,$^) \
 		$(filter %.wixlib,$^)
 
-$(TargetFullName): $(WIXOBJFILES) $(WXLFILES) $(foreach lib,$(WIXLIBS), -l$(lib))
+$(TargetFullName): $(WIXOBJFILES) $(WXLFILES) $(foreach lib,$(WIXLIBS), -l$(lib)) $(DEPENDENCIES)
+
+.PHONY: wixproj
+
+wixproj: $(TargetFullName)

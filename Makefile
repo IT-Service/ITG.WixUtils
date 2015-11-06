@@ -8,7 +8,8 @@
 
 ProjectName				:= ITG.WixUtils
 Cultures				:= ru-ru en-us
-WIXLIBS					:=
+
+WIXUTILSLIB				:= yes
 
 include wixlib.mk
 

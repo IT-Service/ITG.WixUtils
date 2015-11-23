@@ -35,6 +35,7 @@ WixUtilsOutputPath		:= $(WixUtilsProjectDir)bin/$(Configuration)
 WixUtilsTargetFullName	:= $(WixUtilsOutputPath)/$(WixUtilsTargetName).wixlib
 vpath %.wixlib $(WixUtilsOutputPath)
 DEPENDENCIES			+= $(WixUtilsTargetFullName)
+STDLIBS					?=
 
 $(WixUtilsTargetFullName): ;
 	$(MAKE) -C $(WixUtilsProjectDir)
@@ -57,10 +58,12 @@ ifdef MSBuildExtensionsPath
 endif
 
 OutputPath				?= $(OutputDir)$(Configuration)/
+OutputPathWithCulture	?= $(OutputDir)$(Configuration)/$(Culture)/
 IntermediateOutputPath	?= $(IntermediateOutputDir)$(Configuration)/
+IntermediateOutputPathWithCulture	?= $(IntermediateOutputDir)$(Configuration)/$(Culture)/
 
 MAKETARGETDIR			:= cd $(dir ${@D}) && mkdir $(notdir ${@D})
-WIXDIR					?= %ProgramFiles(x86)%/WiX Toolset v4.0/bin/
+WIXDIR					?= $(WIX)bin/
 CANDLE					?= "$(WIXDIR)candle.exe"
 LIGHT					?= "$(WIXDIR)light.exe"
 LIT						?= "$(WIXDIR)lit.exe"
@@ -100,8 +103,8 @@ $(IntermediateOutputPath)%.wixobj: %.wxs $(WXIFILES);
 .LIBPATTERNS			:= %.wixlib
 WIXOBJFILES				:= $(patsubst %.wxs,$(IntermediateOutputPath)%.wixobj,$(WXSFILES))
 
-vpath %.msi $(OutputDir)$(Configuration)
-vpath %.msm $(OutputDir)$(Configuration)
+vpath %.msi $(OutputDir)$(Configuration)\$(Culture)
+vpath %.msm $(OutputDir)$(Configuration)\$(Culture)
 vpath %.wixlib $(OutputDir)$(Configuration)
 
 %.msi %.msm:;
@@ -112,7 +115,8 @@ vpath %.wixlib $(OutputDir)$(Configuration)
 		-cultures:$(Culture) \
 		$(foreach locfile,$(filter %.wxl,$^),-loc $(locfile) ) \
 		$(filter %.wixobj,$^) \
-		$(filter %.wixlib,$^)
+		$(filter %.wixlib,$^) \
+		$(foreach wixext,$(WIXEXTENSIONS),-ext "$(WIXDIR)$(wixext).dll" )
 
 %.wixlib:;
 	$(LIT) \

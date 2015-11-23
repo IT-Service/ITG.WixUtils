@@ -1,5 +1,5 @@
 #
-# GNU make Makefile for build .wixlib
+# GNU make Makefile for build .msm
 # 
 
 TargetExt				:= .msm

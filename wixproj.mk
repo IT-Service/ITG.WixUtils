@@ -11,7 +11,7 @@
 ProjectName				?= $(notdir $(CURDIR))
 TargetName				?= $(ProjectName)
 
-WXIFILES				?=
+WXIFILES				?= $(wildcard *.wxi)
 
 ProjectDir				?= $(CURDIR)/
 OutputDir				?= bin/

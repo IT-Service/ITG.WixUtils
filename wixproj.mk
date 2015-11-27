@@ -67,6 +67,10 @@ WIXDIR					?= $(WIX)bin/
 CANDLE					?= "$(WIXDIR)candle.exe"
 LIGHT					?= "$(WIXDIR)light.exe"
 LIT						?= "$(WIXDIR)lit.exe"
+SIGNTOOL				?= "$(WindowsSdkDir)bin\$(Platform)\signtool.exe"
+SIGN					?=	$(SIGNTOOL) \
+	sign /a \
+	/t http://timestamp.verisign.com/scripts/timstamp.dll
 PATHSEP					:=;
 
 .PHONY: clean cleanwixproj
@@ -117,6 +121,7 @@ vpath %.wixlib $(OutputDir)$(Configuration)
 		$(filter %.wixobj,$^) \
 		$(filter %.wixlib,$^) \
 		$(foreach wixext,$(WIXEXTENSIONS),-ext "$(WIXDIR)$(wixext).dll" )
+	$(SIGN) $@
 
 %.wixlib:;
 	$(LIT) \

@@ -8,34 +8,34 @@
 
 .DELETE_ON_ERROR:;
 
-ProjectName				?= $(notdir $(CURDIR))
-TargetName				?= $(ProjectName)
+ProjectName       ?= $(notdir $(CURDIR))
+TargetName        ?= $(ProjectName)
 
-WXIFILES				?= $(wildcard *.wxi)
+WXIFILES          ?= $(wildcard *.wxi)
 
-ProjectDir				?= $(CURDIR)/
-OutputDir				?= bin/
+ProjectDir        ?= $(CURDIR)/
+OutputDir         ?= bin/
 IntermediateOutputDir	?= obj/
-Configuration			?= Release
-Platform				?= x86
-Culture					?= ru-ru
-Cultures				?= $(Culture)
-SuppressICEs			?= ICEM09
-SuppressWarnings		?= 1085 1086
+Configuration     ?= Release
+Platform          ?= x86
+Culture           ?= ru-ru
+Cultures          ?= $(Culture)
+SuppressICEs      ?= ICEM09
+SuppressWarnings  ?= 1085 1086
 
-#TargetExt				?= .msi
-TargetFileName			?= $(TargetName)$(TargetExt)
-TargetFullName			?= $(OutputPath)$(TargetFileName)
+#TargetExt        ?= .msi
+TargetFileName    ?= $(TargetName)$(TargetExt)
+TargetFullName    ?= $(OutputPath)$(TargetFileName)
 
 ifndef WIXUTILSLIB
 
-WixUtilsTargetName		:= ITG.WixUtils
-WixUtilsProjectDir		:= ../$(WixUtilsTargetName)/
-WixUtilsOutputPath		:= $(WixUtilsProjectDir)bin/$(Configuration)
-WixUtilsTargetFullName	:= $(WixUtilsOutputPath)/$(WixUtilsTargetName).wixlib
+WixUtilsTargetName     := ITG.WixUtils
+WixUtilsProjectDir     := ../$(WixUtilsTargetName)/
+WixUtilsOutputPath     := $(WixUtilsProjectDir)bin/$(Configuration)
+WixUtilsTargetFullName := $(WixUtilsOutputPath)/$(WixUtilsTargetName).wixlib
 vpath %.wixlib $(WixUtilsOutputPath)
-DEPENDENCIES			+= $(WixUtilsTargetFullName)
-STDLIBS					?=
+DEPENDENCIES           += $(WixUtilsTargetFullName)
+STDLIBS                ?=
 
 $(WixUtilsTargetFullName): ;
 	$(MAKE) -C $(WixUtilsProjectDir)
@@ -45,33 +45,38 @@ cleanwixutils: ;
 
 endif
 
-WXSFILES				?= $(wildcard *.wxs)
-WXLFILES				?= $(wildcard *.wxl) $(foreach culture,$(Cultures),$(wildcard $(culture)/*.wxl))
+WXSFILES          ?= $(wildcard *.wxs)
+WXLFILES          ?= $(wildcard *.wxl) $(foreach culture,$(Cultures),$(wildcard $(culture)/*.wxl))
 
-SPACE					:= $(empty) $(empty)
+SPACE             := $(empty) $(empty)
 
 ifdef MSBuildExtensionsPath32
-	WixTargetsPath		?= $(MSBuildExtensionsPath32)\WiX Toolset\v4\Wix.targets
+	WixTargetsPath ?= $(MSBuildExtensionsPath32)\WiX Toolset\v4\Wix.targets
 endif
 ifdef MSBuildExtensionsPath
-	WixTargetsPath		?= $(MSBuildExtensionsPath)\WiX Toolset\v4\Wix.targets
+	WixTargetsPath ?= $(MSBuildExtensionsPath)\WiX Toolset\v4\Wix.targets
 endif
 
-OutputPath				?= $(OutputDir)$(Configuration)/
-OutputPathWithCulture	?= $(OutputDir)$(Configuration)/$(Culture)/
-IntermediateOutputPath	?= $(IntermediateOutputDir)$(Configuration)/
-IntermediateOutputPathWithCulture	?= $(IntermediateOutputDir)$(Configuration)/$(Culture)/
+OutputPath ?= $(OutputDir)$(Configuration)/
+OutputPathWithCulture ?= $(OutputDir)$(Configuration)/$(Culture)/
+IntermediateOutputPath ?= $(IntermediateOutputDir)$(Configuration)/
+IntermediateOutputPathWithCulture ?= $(IntermediateOutputDir)$(Configuration)/$(Culture)/
 
-MAKETARGETDIR			:= cd $(dir ${@D}) && mkdir $(notdir ${@D})
-WIXDIR					?= $(WIX)bin/
-CANDLE					?= "$(WIXDIR)candle.exe"
-LIGHT					?= "$(WIXDIR)light.exe"
-LIT						?= "$(WIXDIR)lit.exe"
-SIGNTOOL				?= "$(WindowsSdkDir)bin\$(Platform)\signtool.exe"
-SIGN					?=	$(SIGNTOOL) \
+MAKETARGETDIR     = /usr/bin/mkdir -p $(@D)
+ifdef WIX
+  WIXDIR					?= $(WIX)bin/
+else
+  WIXDIR					:= 
+endif
+CANDLE            ?= "$(WIXDIR)candle.exe"
+LIGHT             ?= "$(WIXDIR)light.exe"
+LIT               ?= "$(WIXDIR)lit.exe"
+
+SIGNTOOL          ?= "$(WindowsSdkDir)bin\$(Platform)\signtool.exe"
+SIGN              ?= $(SIGNTOOL) \
 	sign /a \
 	/t http://timestamp.verisign.com/scripts/timstamp.dll
-PATHSEP					:=;
+PATHSEP           :=;
 
 .PHONY: clean cleanwixproj
 
@@ -104,8 +109,8 @@ $(IntermediateOutputPath)%.wixobj: %.wxs $(WXIFILES);
 		-arch $(Platform) \
 		$<
 
-.LIBPATTERNS			:= %.wixlib
-WIXOBJFILES				:= $(patsubst %.wxs,$(IntermediateOutputPath)%.wixobj,$(WXSFILES))
+.LIBPATTERNS := %.wixlib
+WIXOBJFILES  := $(patsubst %.wxs,$(IntermediateOutputPath)%.wixobj,$(WXSFILES))
 
 vpath %.msi $(OutputDir)$(Configuration)\$(Culture)
 vpath %.msm $(OutputDir)$(Configuration)\$(Culture)
@@ -121,7 +126,7 @@ vpath %.wixlib $(OutputDir)$(Configuration)
 		$(filter %.wixobj,$^) \
 		$(filter %.wixlib,$^) \
 		$(foreach wixext,$(WIXEXTENSIONS),-ext "$(WIXDIR)$(wixext).dll" )
-	$(SIGN) $@
+#	$(SIGN) $@
 
 %.wixlib:;
 	$(LIT) \

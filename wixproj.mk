@@ -43,6 +43,11 @@ $(WixUtilsTargetFullName): ;
 cleanwixutils: ;
 	$(MAKE) -C $(WixUtilsProjectDir) clean
 
+else
+
+DEPENDENCIES           :=
+STDLIBS                :=
+
 endif
 
 WXSFILES          ?= $(wildcard *.wxs)

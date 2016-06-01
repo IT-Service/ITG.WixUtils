@@ -2,15 +2,11 @@
 # GNU make Makefile for build ITGWixUtils
 # 
 
-.DEFAULT_GOAL			:= all
+.DEFAULT_GOAL := wixlib
 
-.PHONY: all
+ProjectName := ITG.WixUtils
+Cultures    := ru-ru en-us
 
-ProjectName				:= ITG.WixUtils
-Cultures				:= ru-ru en-us
-
-WIXUTILSLIB				:= yes
+WIXUTILSLIB := yes
 
 include wixlib.mk
-
-all: wixlib

@@ -4,7 +4,6 @@
 /_UpgradeReport_Files
 /UpgradeLog*.htm
 /UpgradeLog*.XML
-
 *.wixpdb
-
 *.chw
+/packages

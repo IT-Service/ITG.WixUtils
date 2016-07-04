@@ -50,6 +50,15 @@ STDLIBS                :=
 
 endif
 
+NuGetPackagesConfig    ?= $(WixUtilsProjectDir)packages.config
+NuGetPackagesDir       ?= $(WixUtilsProjectDir)packages
+
+$(NuGetPackagesDir)%: ;
+	nuget \
+    install $(NuGetPackagesConfig) \
+    -OutputDirectory $(NuGetPackagesDir) \
+    -ExcludeVersion
+
 WXSFILES          ?= $(wildcard *.wxs)
 WXLFILES          ?= $(wildcard *.wxl) $(foreach culture,$(Cultures),$(wildcard $(culture)/*.wxl))
 
@@ -68,14 +77,10 @@ IntermediateOutputPath ?= $(IntermediateOutputDir)$(Configuration)/
 IntermediateOutputPathWithCulture ?= $(IntermediateOutputDir)$(Configuration)/$(Culture)/
 
 MAKETARGETDIR     = /usr/bin/mkdir -p $(@D)
-ifdef WIX
-  WIXDIR					?= $(WIX)bin/
-else
-  WIXDIR					:= 
-endif
-CANDLE            ?= "$(WIXDIR)candle.exe"
-LIGHT             ?= "$(WIXDIR)light.exe"
-LIT               ?= "$(WIXDIR)lit.exe"
+WIXDIR            := $(NuGetPackagesDir)/WiX/tools/
+CANDLE            ?= $(WIXDIR)candle.exe
+LIGHT             ?= $(WIXDIR)light.exe
+LIT               ?= $(WIXDIR)lit.exe
 
 ifdef WindowsSdkDir
   SIGNTOOL        ?= "$(WindowsSdkDir)bin\$(Platform)\signtool.exe"
@@ -103,7 +108,7 @@ endif
 
 vpath %.wixobj $(IntermediateOutputDir)$(Configuration)
 
-$(IntermediateOutputPath)%.wixobj: %.wxs $(WXIFILES);
+$(IntermediateOutputPath)%.wixobj: %.wxs $(WXIFILES) | $(CANDLE)
 	$(CANDLE) \
 		-nologo \
 		-out $(IntermediateOutputPath) \
@@ -127,7 +132,7 @@ vpath %.msi $(OutputDir)$(Configuration)\$(Culture)
 vpath %.msm $(OutputDir)$(Configuration)\$(Culture)
 vpath %.wixlib $(OutputDir)$(Configuration)
 
-%.msi %.msm:;
+%.msi %.msm: | $(LIGHT)
 	$(LIGHT) \
 		-nologo \
 		-sice:$(SuppressICEs) \
@@ -139,7 +144,7 @@ vpath %.wixlib $(OutputDir)$(Configuration)
 		$(foreach wixext,$(WIXEXTENSIONS),-ext "$(WIXDIR)$(wixext).dll" )
 	$(SIGNTARGET)
 
-%.wixlib:;
+%.wixlib: | $(LIT)
 	$(LIT) \
 		-nologo \
 		$(foreach warning,$(SuppressWarnings),-sw$(warning)) \

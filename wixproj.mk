@@ -53,7 +53,7 @@ endif
 NuGetPackagesConfig    ?= $(WixUtilsProjectDir)packages.config
 NuGetPackagesDir       ?= $(WixUtilsProjectDir)packages
 
-$(NuGetPackagesDir)%: ;
+$(NuGetPackagesDir)%: ; 
 	nuget \
     install $(NuGetPackagesConfig) \
     -OutputDirectory $(NuGetPackagesDir) \

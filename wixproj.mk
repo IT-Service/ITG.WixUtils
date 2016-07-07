@@ -99,6 +99,7 @@ PATHSEP           :=;
 cleanwixproj:
 	rm -rf $(OutputDir)
 	rm -rf $(IntermediateOutputDir)
+	rm -rf $(NuGetPackagesDir)
 
 ifdef WIXUTILSLIB
 clean: cleanwixproj

@@ -102,9 +102,9 @@ cleanwixproj:
 	rm -rf $(NuGetPackagesDir)
 
 ifdef WIXUTILSLIB
-clean: cleanwixproj
+clean:: cleanwixproj
 else
-clean: cleanwixproj cleanwixutils
+clean:: cleanwixproj cleanwixutils
 endif
 
 vpath %.wixobj $(IntermediateOutputDir)$(Configuration)

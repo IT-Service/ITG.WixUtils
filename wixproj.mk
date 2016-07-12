@@ -4,9 +4,8 @@
 # The build machine must have WiX 4.0 installed 
 # 
 
-.SECONDARY:;
-
-.DELETE_ON_ERROR:;
+.SECONDARY::;
+.DELETE_ON_ERROR::;
 
 ProjectName       ?= $(notdir $(CURDIR))
 TargetName        ?= $(ProjectName)

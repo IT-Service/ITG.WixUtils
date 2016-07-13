@@ -40,7 +40,7 @@ $(WixUtilsTargetFullName): ;
 	$(MAKE) -C $(WixUtilsProjectDir)
 
 cleanwixutils: ;
-	$(MAKE) -C $(WixUtilsProjectDir) clean
+	@$(MAKE) -C $(WixUtilsProjectDir) clean
 
 else
 
@@ -52,8 +52,10 @@ endif
 NuGetPackagesConfig    ?= $(WixUtilsProjectDir)packages.config
 NuGetPackagesDir       ?= $(WixUtilsProjectDir)packages
 
+NUGET                  ?= nuget.bat
+
 $(NuGetPackagesDir)%: ; 
-	nuget \
+	$(NUGET) \
     install $(NuGetPackagesConfig) \
     -OutputDirectory $(NuGetPackagesDir) \
     -ExcludeVersion

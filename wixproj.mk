@@ -52,7 +52,7 @@ endif
 NuGetPackagesConfig    ?= $(WixUtilsProjectDir)packages.config
 NuGetPackagesDir       ?= $(WixUtilsProjectDir)packages
 
-NUGET                  ?= nuget.bat
+NUGET                  ?= nuget
 
 $(NuGetPackagesDir)%: ; 
 	$(NUGET) \

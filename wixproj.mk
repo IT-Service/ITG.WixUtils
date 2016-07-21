@@ -4,8 +4,10 @@
 # The build machine must have WiX 4.0 installed 
 # 
 
-.SECONDARY::;
-.DELETE_ON_ERROR::;
+OUTPUTDIR          := bin
+
+ITG_MAKEUTILS_DIR  ?= ITG.MakeUtils
+include $(ITG_MAKEUTILS_DIR)/common.mk
 
 ProjectName       ?= $(notdir $(CURDIR))
 TargetName        ?= $(ProjectName)
@@ -13,8 +15,6 @@ TargetName        ?= $(ProjectName)
 WXIFILES          ?= $(wildcard *.wxi)
 
 ProjectDir        ?= $(CURDIR)/
-OutputDir         ?= bin/
-IntermediateOutputDir	?= obj/
 Configuration     ?= Release
 Platform          ?= x86
 Culture           ?= ru-ru
@@ -30,7 +30,7 @@ ifndef WIXUTILSLIB
 
 WixUtilsTargetName     := ITG.WixUtils
 WixUtilsProjectDir     := ../$(WixUtilsTargetName)/
-WixUtilsOutputPath     := $(WixUtilsProjectDir)bin/$(Configuration)
+WixUtilsOutputPath     := $(WixUtilsProjectDir)$(OUTPUTDIR)/$(Configuration)
 WixUtilsTargetFullName := $(WixUtilsOutputPath)/$(WixUtilsTargetName).wixlib
 vpath %.wixlib $(WixUtilsOutputPath)
 DEPENDENCIES           += $(WixUtilsTargetFullName)
@@ -39,31 +39,24 @@ STDLIBS                ?=
 $(WixUtilsTargetFullName): ;
 	$(MAKE) -C $(WixUtilsProjectDir)
 
-cleanwixutils: ;
+clean::
 	@$(MAKE) -C $(WixUtilsProjectDir) clean
 
 else
+
+all: wixlib
 
 DEPENDENCIES           :=
 STDLIBS                :=
 
 endif
 
-NuGetPackagesConfig    ?= $(WixUtilsProjectDir)packages.config
-NuGetPackagesDir       ?= $(WixUtilsProjectDir)packages
-
-NUGET                  ?= nuget
-
-$(NuGetPackagesDir)%: ; 
-	$(NUGET) \
-    install $(NuGetPackagesConfig) \
-    -OutputDirectory $(NuGetPackagesDir) \
-    -ExcludeVersion
+NUGET_PACKAGES_CONFIG  ?= $(WixUtilsProjectDir)packages.config
+NUGET_PACKAGES_DIR     ?= $(WixUtilsProjectDir)packages
+include $(ITG_MAKEUTILS_DIR)/nuget.mk
 
 WXSFILES          ?= $(wildcard *.wxs)
 WXLFILES          ?= $(wildcard *.wxl) $(foreach culture,$(Cultures),$(wildcard $(culture)/*.wxl))
-
-SPACE             := $(empty) $(empty)
 
 ifdef MSBuildExtensionsPath32
 	WixTargetsPath ?= $(MSBuildExtensionsPath32)\WiX Toolset\v4\Wix.targets
@@ -72,13 +65,12 @@ ifdef MSBuildExtensionsPath
 	WixTargetsPath ?= $(MSBuildExtensionsPath)\WiX Toolset\v4\Wix.targets
 endif
 
-OutputPath ?= $(OutputDir)$(Configuration)/
-OutputPathWithCulture ?= $(OutputDir)$(Configuration)/$(Culture)/
-IntermediateOutputPath ?= $(IntermediateOutputDir)$(Configuration)/
-IntermediateOutputPathWithCulture ?= $(IntermediateOutputDir)$(Configuration)/$(Culture)/
+OutputPath ?= $(OUTPUTDIR)/$(Configuration)/
+OutputPathWithCulture ?= $(OUTPUTDIR)/$(Configuration)/$(Culture)/
+IntermediateOutputPath ?= $(AUXDIR)/$(Configuration)/
+IntermediateOutputPathWithCulture ?= $(AUXDIR)/$(Configuration)/$(Culture)/
 
-MAKETARGETDIR     = /usr/bin/mkdir -p $(@D)
-WIXDIR            := $(NuGetPackagesDir)/WiX/tools/
+WIXDIR            := $(NUGET_PACKAGES_DIR)/WiX/tools/
 CANDLE            ?= $(WIXDIR)candle.exe
 LIGHT             ?= $(WIXDIR)light.exe
 LIT               ?= $(WIXDIR)lit.exe
@@ -93,22 +85,7 @@ else
   SIGNTARGET      :=
 endif
 
-PATHSEP           :=;
-
-.PHONY: clean cleanwixproj
-
-cleanwixproj:
-	rm -rf $(OutputDir)
-	rm -rf $(IntermediateOutputDir)
-	rm -rf $(NuGetPackagesDir)
-
-ifdef WIXUTILSLIB
-clean:: cleanwixproj
-else
-clean:: cleanwixproj cleanwixutils
-endif
-
-vpath %.wixobj $(IntermediateOutputDir)$(Configuration)
+vpath %.wixobj $(AUXDIR)/$(Configuration)
 
 $(IntermediateOutputPath)%.wixobj: %.wxs $(WXIFILES) | $(CANDLE)
 	$(CANDLE) \
@@ -130,9 +107,9 @@ $(IntermediateOutputPath)%.wixobj: %.wxs $(WXIFILES) | $(CANDLE)
 .LIBPATTERNS := %.wixlib
 WIXOBJFILES  := $(patsubst %.wxs,$(IntermediateOutputPath)%.wixobj,$(WXSFILES))
 
-vpath %.msi $(OutputDir)$(Configuration)\$(Culture)
-vpath %.msm $(OutputDir)$(Configuration)\$(Culture)
-vpath %.wixlib $(OutputDir)$(Configuration)
+vpath %.msi $(OUTPUTDIR)/$(Configuration)/$(Culture)
+vpath %.msm $(OUTPUTDIR)/$(Configuration)/$(Culture)
+vpath %.wixlib $(OUTPUTDIR)/$(Configuration)
 
 %.msi %.msm: | $(LIGHT)
 	$(LIGHT) \

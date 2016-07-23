@@ -7,5 +7,4 @@ TargetExt				:= .wixlib
 include wixproj.mk
 
 .PHONY: wixlib
-
-wixlib: wixproj
+wixlib: $(TargetFullName)

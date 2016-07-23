@@ -7,5 +7,4 @@ TargetExt				:= .msi
 include $(join $(dir $(lastword $(MAKEFILE_LIST))),wixproj.mk)
 
 .PHONY: msi
-
-msi: wixproj
+msi: $(TargetFullName)

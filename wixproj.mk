@@ -133,7 +133,3 @@ vpath %.wixlib $(OUTPUTDIR)/$(Configuration)
 		$(filter %.wixlib,$^)
 
 $(TargetFullName): $(WIXOBJFILES) $(WXLFILES) $(foreach lib,$(WIXLIBS), -l$(lib)) $(DEPENDENCIES)
-
-.PHONY: wixproj
-
-wixproj: $(TargetFullName)

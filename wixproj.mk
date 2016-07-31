@@ -8,6 +8,7 @@ OUTPUTDIR          := bin
 
 ITG_MAKEUTILS_DIR  ?= ITG.MakeUtils
 include $(ITG_MAKEUTILS_DIR)/common.mk
+include $(ITG_MAKEUTILS_DIR)/signing/sign.mk
 
 ProjectName       ?= $(notdir $(CURDIR))
 TargetName        ?= $(ProjectName)
@@ -51,8 +52,8 @@ STDLIBS                :=
 
 endif
 
-NUGET_PACKAGES_CONFIG  ?= $(WixUtilsProjectDir)packages.config
-NUGET_PACKAGES_DIR     ?= $(WixUtilsProjectDir)packages
+NUGET_PACKAGES_CONFIG  := $(WixUtilsProjectDir)packages.config
+NUGET_PACKAGES_DIR     := $(WixUtilsProjectDir)packages
 include $(ITG_MAKEUTILS_DIR)/nuget.mk
 
 WXSFILES          ?= $(wildcard *.wxs)
@@ -75,22 +76,12 @@ CANDLE            ?= $(WIXDIR)candle.exe
 LIGHT             ?= $(WIXDIR)light.exe
 LIT               ?= $(WIXDIR)lit.exe
 
-ifdef WindowsSdkDir
-  SIGNTOOL        ?= "$(WindowsSdkDir)bin\$(Platform)\signtool.exe"
-  SIGN            := signtool \
-    sign /a \
-    /t http://timestamp.verisign.com/scripts/timstamp.dll
-  SIGNTARGET      = $(SIGN) $@
-else
-  SIGNTARGET      :=
-endif
-
 vpath %.wixobj $(AUXDIR)/$(Configuration)
 
 $(IntermediateOutputPath)%.wixobj: %.wxs $(WXIFILES) | $(CANDLE)
 	$(CANDLE) \
 		-nologo \
-		-out $(IntermediateOutputPath) \
+		-out $@ \
 		-dConfiguration=$(Configuration) \
 		-dOutDir=$(OutputPath) \
 		-dPlatform=$(Platform) \
@@ -111,15 +102,15 @@ vpath %.msi $(OUTPUTDIR)/$(Configuration)/$(Culture)
 vpath %.msm $(OUTPUTDIR)/$(Configuration)/$(Culture)
 vpath %.wixlib $(OUTPUTDIR)/$(Configuration)
 
-%.msi %.msm: | $(LIGHT)
+%.msi %.msm: $(CODE_SIGNING_CERTIFICATE_PFX) | $(LIGHT)
 	$(LIGHT) \
 		-nologo \
 		-sice:$(SuppressICEs) \
 		-out $@ \
 		-cultures:$(Culture) \
 		$(foreach locfile,$(filter %.wxl,$^),-loc $(locfile) ) \
-		$(filter %.wixobj,$^) \
-		$(filter %.wixlib,$^) \
+		$(foreach wixobj,$(filter %.wixobj,$^),$(wixobj)) \
+		$(foreach wixlib,$(filter %.wixlib,$^),$(wixlib)) \
 		$(foreach wixext,$(WIXEXTENSIONS),-ext "$(WIXDIR)$(wixext).dll" )
 	$(SIGNTARGET)
 
@@ -129,7 +120,7 @@ vpath %.wixlib $(OUTPUTDIR)/$(Configuration)
 		$(foreach warning,$(SuppressWarnings),-sw$(warning)) \
 		-out $@ \
 		$(foreach locfile,$(filter %.wxl,$^),-loc $(locfile) ) \
-		$(filter %.wixobj,$^) \
-		$(filter %.wixlib,$^)
+		$(foreach wixobj,$(filter %.wixobj,$^),$(wixobj)) \
+		$(foreach wixlib,$(filter %.wixlib,$^),$(wixlib))
 
 $(TargetFullName): $(WIXOBJFILES) $(WXLFILES) $(foreach lib,$(WIXLIBS), -l$(lib)) $(DEPENDENCIES)

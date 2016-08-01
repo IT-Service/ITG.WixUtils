@@ -52,8 +52,9 @@ STDLIBS                :=
 
 endif
 
-NUGET_PACKAGES_CONFIG  := $(WixUtilsProjectDir)packages.config
 NUGET_PACKAGES_DIR     := $(WixUtilsProjectDir)packages
+NUGET_PACKAGE_INSTALL_ARGS_WiX := -Prerelease
+
 include $(ITG_MAKEUTILS_DIR)/nuget.mk
 
 WXSFILES          ?= $(wildcard *.wxs)
